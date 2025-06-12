@@ -20,14 +20,16 @@ export default function Chat() {
           {m.role === "user" ? "User: " : "AI: "}
           {m.content}
 
-          {/* show images */}
+          {/* show images or pdfs */}
           <div>
             {m?.experimental_attachments
               ?.filter((attachment) =>
-                attachment?.contentType?.startsWith("image/")
+                attachment?.contentType?.startsWith("image/") ||
+                attachment?.contentType?.startsWith("application/pdf"),
               )
               .map((attachment, index) => (
-                <Image
+                attachment.contentType?.startsWith("image/") ? (
+                  <Image
                   key={`${m.id}-${index}`}
                   src={attachment.url}
                   width={500}
@@ -35,8 +37,19 @@ export default function Chat() {
                   alt={attachment.name ?? `attachment-${index}`}
                   className="rounded-lg"
                 />
+                ) : attachment.contentType?.startsWith('application/pdf') ? (
+                  <iframe 
+                  key={`${m.id}-${index}`}
+                  src={attachment.url}
+                  width={500}
+                  height={500}
+                  className="rounded-lg"
+                  title={attachment.name ?? `attachment-${index}`}
+                  />
+                ) : null
               ))}
           </div>
+
         </div>
       ))}
 

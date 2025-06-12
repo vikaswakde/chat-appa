@@ -10,8 +10,18 @@ export async function POST(req: Request) {
 
     const {messages}: {messages: Message[]} = await req.json()
 
+    // check if user has sent an Image
+    const messagesHaveImages = messages.some(message => 
+        message.experimental_attachments?.some(
+            a => a.contentType?.startsWith('image/')
+        ),
+    );
+
     const result = streamText({
-        model: openrouter('google/gemini-2.0-flash-exp:free'),
+        model: 
+        messagesHaveImages 
+        ? openrouter('google/gemini-2.0-flash-exp:free')
+        : openrouter('deepseek/deepseek-r1-0528-qwen3-8b:free'),
         messages
     })
 
