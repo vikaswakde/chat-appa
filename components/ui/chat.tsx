@@ -30,8 +30,8 @@ export default function Chat({
     experimental_resume,
     data,
   } = useChat({
-    // Throttle the messages and data updates to 50ms:
-    experimental_throttle: 25,
+    // Throttle the messages and data updates to 55ms:
+    experimental_throttle: 55,
     id, // use the provided chat id
     initialMessages, // initial messages if provided
     sendExtraMessageFields: true, // send id and createdAt for each message
