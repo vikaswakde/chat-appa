@@ -1,14 +1,14 @@
 'use client'
-import type { Message } from "ai";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAutoResume } from "@/hooks/use-auto-resume";
 import { useChat } from "@ai-sdk/react";
+import type { Message } from "ai";
 import { PaperclipIcon, StopCircleIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { useAutoResume } from "@/hooks/use-auto-resume";
 
 export default function Chat({
   id,
