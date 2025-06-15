@@ -1,10 +1,12 @@
-'use client'
+"use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ReadingTime } from "@/components/ui/reading-time";
 import { useAutoResume } from "@/hooks/use-auto-resume";
 import { useChat } from "@ai-sdk/react";
 import type { Message } from "ai";
 import { PaperclipIcon, StopCircleIcon } from "lucide-react";
+import { motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
@@ -37,8 +39,8 @@ export default function Chat({
     sendExtraMessageFields: true, // send id and createdAt for each message
 
     // only send the last message to the server: (if you want to reduce the load on the server)
-    experimental_prepareRequestBody({messages, id}){
-      return { message: messages[messages.length - 1], id}
+    experimental_prepareRequestBody({ messages, id }) {
+      return { message: messages[messages.length - 1], id };
     },
   });
 
@@ -47,8 +49,8 @@ export default function Chat({
     initialMessages: messages,
     experimental_resume,
     data,
-    setMessages
-  })
+    setMessages,
+  });
 
   // state to hold the files
   const [files, setFiles] = useState<FileList | undefined>(undefined);
@@ -74,6 +76,9 @@ export default function Chat({
             if (part.type === "text") {
               return (
                 <div key={`${message.id}-${index}`}>
+                  {message.role === "assistant" && (
+                    <ReadingTime text={part.text} className="mb-2" />
+                  )}
                   {part.type === "text" ? part.text : null}
 
                   <Button
@@ -171,14 +176,14 @@ export default function Chat({
         </div>
       ))}
 
-      {(status === 'submitted' || status === 'streaming') && (
+      {(status === "submitted" || status === "streaming") && (
         <div className="text-center p-4">loading...</div>
       )}
 
       {error && toast.error("An error occurred")}
 
       <form
-        className="fixed bottom-0 w-full max-w-2xl mb-8 border border-gray-700 rounded-xl shadow-xl p-2"
+        className="fixed bottom-0 w-full max-w-2xl mb-8 border border-gray-700 rounded-xl shadow-xl p-2 group"
         onSubmit={(event) => {
           handleSubmit(event, {
             experimental_attachments: files,
@@ -199,14 +204,35 @@ export default function Chat({
           disabled={status !== "ready" && status !== "error"}
         />
 
-        <div className="flex items-center gap-2 justify-between pt-2">
-          <Button
+        <div className="flex items-center gap-2 justify-between pt-2 ">
+          <motion.button
+            whileHover={{
+              rotateX: 5,
+              rotateY: 1,
+              boxShadow: "0px 1px 3px rgba(8,112,184,0.7)",
+              y: -2
+            }}
+            style={{
+              translateZ: 100,
+            }}
+            whileTap={{
+              y: 0
+            }}
+            transition={{
+              duration: 0.3,
+              ease: "easeInOut",
+            }}
             type="submit"
-            variant="outline"
-            disabled={(status !== "ready" && status !== "error") || !input.trim()}
+            disabled={
+              (status !== "ready" && status !== "error") || !input.trim()
+            }
+            className="border rounded-md px-4 py-2"
           >
             Ask
-          </Button>
+            <span className="absolute inset-x-0 bottom-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent h-px w-3/4 mx-auto"></span>
+            <span className="absolute inset-x-0 top-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent h-px w-3/4 mx-auto"></span>
+          </motion.button>
+          <span className="absolute opacity-0 group-hover:opacity-69 transition-opacity duration-300  inset-x-0 bottom-px bg-gradient-to-r from-transparent via-cyan-700 to-transparent h-px w-3/4 mx-auto"></span>
 
           <div className="relative">
             <Input
