@@ -2,9 +2,17 @@ import { jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { type Message } from "ai";
 import { sql } from "drizzle-orm";
 
+export const users = pgTable("users", {
+  id: text("id").primaryKey(), // Clerk User ID
+  name: text("name"),
+  email: text("email"),
+  imageUrl: text("image_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const chats = pgTable("chats", {
   id: text("id").primaryKey(),
-  userId: text("user_id"),
+  userId: text("user_id").references(() => users.id),
   messages: jsonb("messages").$type<Message[]>().notNull(),
   streamIds: jsonb("stream_ids").$type<string[]>().default(sql`'[]'::jsonb`),
   createdAt: timestamp("created_at").defaultNow().notNull(),
